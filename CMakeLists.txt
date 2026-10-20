@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(OpenGlEngine
+project(OpenGLEngine
     VERSION 1.0
-    LANGUAGE C CXX
-    )
+    DESCRIPTION "OpenGL C++ Game Engine"
+    LANGUAGES C CXX
+)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
