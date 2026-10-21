@@ -5,6 +5,12 @@
 #include <iostream>
 
 
+float triangleData[] = {
+    0,1,0, 1,0,0,
+    -1,-1,0, 0,1,0,
+    1,-1,0, 0,0,1
+};
+
 
 int main() {
 
@@ -38,6 +44,13 @@ int main() {
     glfwTerminate();
     return 1;
     }
+
+    // Create Buffer
+    GLuint  buffer = 0;
+    glGenBuffers(1, &buffer); // The first argument is how many buffers to create, usually from an array.
+    
+    // Bind Buffer
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
