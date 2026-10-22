@@ -52,7 +52,7 @@ int main() {
 
         void main()
         {
-            gl_Position = vec4(position.x, position.y, position.z, 1.0)
+            gl_Position = vec4(position.x, position.y, position.z, 1.0);
         }
     )";
 
@@ -75,9 +75,9 @@ int main() {
         #version 330 core
         out vec4 FragColor;
 
-        int main()
+        void main()
         {
-            FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            FragColor = vec4(1.0, 0.0, 1.0, 0.0);
         }
     )";
 
@@ -129,12 +129,31 @@ int main() {
     // The Fragment and Vertex Shader are what we will program
 
 
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW); // Transfer vertex data from system memory to gpu memory
+    glBindBuffer(GL_ARRAY_BUFFER, 0); // Now our vertex data resides in gpu memory
+    // Next tell shader program how to interprate the data when reach fragment shader
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 
     // Program loop
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(1.0f,0.0f,0.0f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+        glBindVertexArray(vao); // bind vao
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
