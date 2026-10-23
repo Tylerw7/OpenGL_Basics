@@ -49,9 +49,13 @@ int main() {
     std::string vertexShaderSource = R"(
         #version 330 core
         layout (location = 0) in vec3 position;
+        layout (location = 1) in vec3 color;
+
+        out vec3 vColor;
 
         void main()
         {
+            vColor = color;
             gl_Position = vec4(position.x, position.y, position.z, 1.0);
         }
     )";
@@ -75,9 +79,11 @@ int main() {
         #version 330 core
         out vec4 FragColor;
 
+        in vec3 vColor;
+
         void main()
         {
-            FragColor = vec4(1.0, 0.0, 1.0, 0.0);
+            FragColor = vec4(vColor, 1.0);
         }
     )";
 
@@ -116,9 +122,9 @@ int main() {
     // Our first triangle
     std::vector<float> vertices =
     {
-        0.0f, 0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f
+        0.0f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 
+        0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0 
     };
 
     // Graphics pipeline
@@ -139,15 +145,19 @@ int main() {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1,3,GL_FLOAT, false, 6 * sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     // Program loop
     while (!glfwWindowShouldClose(window))
     {
-        glClearColor(1.0f,0.0f,0.0f,1.0f);
+        glClearColor(0.0f,0.0f,0.0f,0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
