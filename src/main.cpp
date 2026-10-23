@@ -122,9 +122,16 @@ int main() {
     // Our first triangle
     std::vector<float> vertices =
     {
-        0.0f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 
-        0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0 
+        0.5f, 0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0,
+        0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f 
+    };
+
+    std::vector<unsigned int> indices = 
+    {
+        0,1,2,
+        0,2,3
     };
 
     // Graphics pipeline
@@ -141,10 +148,22 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW); // Transfer vertex data from system memory to gpu memory
     glBindBuffer(GL_ARRAY_BUFFER, 0); // Now our vertex data resides in gpu memory
     // Next tell shader program how to interprate the data when reach fragment shader
+
+
+    // Create EBO
+    GLuint ebo;
+    glGenBuffers(1,&ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -162,7 +181,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(vao); // bind vao
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
