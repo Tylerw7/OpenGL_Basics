@@ -39,6 +39,7 @@ target_include_directories(glad PUBLIC
 # Our application
 add_executable(OpenGLEngine
     src/main.cpp
+    src/lesson.cpp
 )
 
 target_link_libraries(OpenGLEngine PRIVATE
