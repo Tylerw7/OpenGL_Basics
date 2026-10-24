@@ -137,10 +137,70 @@ std::map<char, std::vector<int>> fontMap = {
 };
 
 
+// Function declarations
+void SpawnFruit();
+void InitGame();
+void ResetGame();
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void DrawCell(const Vec2i& position, const Vec3& color);
+void DrawChar(char c, float x, float y, float scale, const Vec3& color);
+void DrawText(const std::string& text, float x, float y, float scale, const Vec3& color);
+void RenderGame(GLFWwindow* window);
+void UpdateGame(float deltaTime);
+void DrawBorder();
+void DrawSnake();
+void DrawScore();
+void DrawGameOver();
+void DrawStartScreen();
 
 
 int main()
 {
-    std::cout << "Hello user";
+    #if defined (__linux__)
+        glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+    #endif
+
+    if (!glfwInit())
+    {
+        std::cout << "Error initialising GLFW" << std::endl;
+        return 1;
+    }    
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+
+    #ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    #endif  
+
+
+    // Create the window
+    GLFWwindow* window = glfwCreateWindow(800,800, "SnakeGame", nullptr, nullptr);
+    if (!window)
+    {
+        std::cout << "Error creating window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    // Give the window a context
+    glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(window, KeyCallback);
+
+    // Initialize GLAD AFTER creating and activating the OpenGL context
+    // Glad and rendering will not work if this code is not here.
+    if (!gladLoadGL(glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD!" << std::endl;
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        return -1;
+    }
+    
     return 0;
 }
