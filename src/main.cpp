@@ -202,11 +202,87 @@ int main()
         return -1;
     }
 
-    // Compile the Shader
+    // Compile the  Vertex Shader
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     const char* vertexShaderCStr = vertexShaderSource.c_str(); // converte to C string
     glShaderSource(vertexShader, 1, & vertexShaderCStr, NULL);
     glCompileShader(vertexShader);
+
+    // Check vertex Shader Comilation
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR:VERTEX_SHADER_COMILATION_FAILED" << infoLog << std::endl;
+        glfwTerminate();
+        return 1;
+    }
+
+    // Compile Fragment Shader
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    const char* fragmentShaderSourceCStr = fragmentShaderSource.c_str();
+    glShaderSource(fragmentShader, 1, &fragmentShaderSourceCStr, NULL);
+    glCompileShader(fragmentShader);
+
+    // Check fragment shader compilation
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cerr << "ERROR:FRAGMENT_SHADER_COMPILATION_FAILED: " << infoLog << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    // Create Shader Program
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    // Check shader program linking
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cerr << "ERROR:SHADER_PROGRAM_LINKING_FAILED: " << infoLog << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    // Cleanup shaders
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+
+    // Get uniform locations
+    uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
+    uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
+    uColorLoc = glGetUniformLocation(shaderProgram, "uColor");
+
+    // Setup quad VAO
+    const float vertices[] =
+    {
+        -0.5f, -0.5f,
+         0.5f, -0.5f,
+        -0.5f,  0.5f,
+         0.5f,  0.5f
+    };
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
     
     return 0;
 }
