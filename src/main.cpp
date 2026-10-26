@@ -201,6 +201,12 @@ int main()
         glfwTerminate();
         return -1;
     }
+
+    // Compile the Shader
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const char* vertexShaderCStr = vertexShaderSource.c_str(); // converte to C string
+    glShaderSource(vertexShader, 1, & vertexShaderCStr, NULL);
+    glCompileShader(vertexShader);
     
     return 0;
 }
