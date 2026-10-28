@@ -10,6 +10,41 @@
 #include <map>
 
 
+
+
+// Simple vector structure
+struct Vec2
+{
+    float x,y;
+    Vec2(float x = 0.0f, float y = 0.0f) : x(x), y(y) {}
+};
+
+struct Vec2i
+{
+    int x, y;
+    Vec2i(int x = 0, int y = 0) : x(x), y(y) {}
+
+    bool operator==(const Vec2i& other) const
+    {
+        return x == other.x && y == other.y;
+    }
+};
+
+struct Vec3
+{
+    float r, g, b;
+    Vec3() : r(0.0f), g(0.0f), b(0.0f) {}
+    Vec3(float r, float g, float b) : r(r), g(g), b(b) {}
+};
+
+// Game Constants
+const int GRID_WIDTH = 20;
+const int GRID_HEIGHT = 20;
+const float UPDATE_INTERVAL = 0.15f; // seconds
+const float CELL_WIDTH = 2.0f / GRID_WIDTH;
+const float CELL_HEIGHT = 2.0f / GRID_HEIGHT;
+
+
 // Vertex Shader
 std::string vertexShaderSource = R"(
     #version 330 core
@@ -97,6 +132,7 @@ std::map<char, std::vector<int>> fontMap = {
 
 // Function declarations
 void KeyCallBack(GLFWwindow* window, int key, int scancode, int action, int mods);
+void DrawCell(const Vec2i& position, const Vec3& color);
 
 
 
@@ -228,10 +264,22 @@ int main()
         glClearColor(0.08f, 0.08f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glUseProgram(shaderProgram);
+
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform2f(uScaleLoc, 0.5f, 0.5f);
+        glUniform3f(uColorLoc, 0.2f, 0.9f, 0.3f);
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glBindVertexArray(0);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
 
     }
+
+
     glfwDestroyWindow(window);
     glfwTerminate();
 
