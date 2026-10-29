@@ -26,6 +26,18 @@ std::string vertexShaderSource = R"(
     }
 )";
 
+// Fragment Shader
+std::string fragmentShaderSource = R"(
+#version 330 core
+
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+)";
+
 
 
 
@@ -69,6 +81,11 @@ int main()
         return 1;
     }
 
+    // Create the Vertex Shader
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    const char* vertexShaderSourceC_Str = vertexShaderSource.c_str();
+    glShaderSource(vertexShader, 1, &vertexShaderSourceC_Str, nullptr);
+    glCompileShader(vertexShader);
 
 
     // Game Loop
